@@ -5,6 +5,7 @@
 // @description  즐겨찾기 가시성을 높혀주는 확장
 // @author       Nikuname, Clrain
 // @match        https://www.fow.lol/*
+// @match        https://fow.lol/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=fow.lol
 // @updateURL    https://raw.githubusercontent.com/jinhyeonseo01/fow-favorites-extension/refs/heads/main/src/fow-lol-favorites.js
 // @downloadURL  https://raw.githubusercontent.com/jinhyeonseo01/fow-favorites-extension/refs/heads/main/src/fow-lol-favorites.js
