@@ -9,6 +9,8 @@
 // @updateURL    https://github.com/jinhyeonseo01/fow-favorites-extension/raw/main/src/fowlol-flower-ext.js
 // @downloadURL  https://github.com/jinhyeonseo01/fow-favorites-extension/raw/main/src/fowlol-flower-ext.js
 // @grant        none
+// ==/UserScript==
+
 
 (function() {
   'use strict';

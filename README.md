@@ -1,7 +1,7 @@
-# AfreecaTV - Adblock & High Resolution  
+# Fow Favorites Extension  
 
 ## 소개  
-**Fow Favorites Extension**
+**Fow Favorites Extension**  
 
 리그오브레전드 전적검색 사이트 fow.lol의 즐겨찾기 기능을 확장하는 
 [클릭하여 설치하기](/src/fowlol-flower-ext.js?raw=True)
