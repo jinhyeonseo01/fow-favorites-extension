@@ -4,7 +4,7 @@
 **Fow Favorites Extension**  
 
 리그오브레전드 전적검색 사이트 fow.lol의 즐겨찾기 기능을 확장하는 
-[클릭하여 설치하기](https://github.com/jinhyeonseo01/fow-favorites-extension/raw/main/src/fowlol-flower-ext.js)
+[클릭하여 설치하기](https://raw.githubusercontent.com/jinhyeonseo01/fow-favorites-extension/refs/heads/main/src/fow-lol-favorites.js)
 
 ## 주요 기능  
 > **1. 그룹 단위 닉네임 저장**  
@@ -22,7 +22,7 @@
    - [Tampermonkey for Opera/OperaGX](https://addons.opera.com/en-gb/extensions/details/tampermonkey-beta/)
 
 2. **스크립트 설치**  
-    [클릭하여 설치하기](https://github.com/jinhyeonseo01/fow-favorites-extension/raw/main/src/fowlol-flower-ext.js)
+    [클릭하여 설치하기](https://raw.githubusercontent.com/jinhyeonseo01/fow-favorites-extension/refs/heads/main/src/fow-lol-favorites.js)
 
 3. **스크립트 활성화**  
     Tampermonkey 대시보드에서 스크립트 이름 옆에 있는 스위치를 클릭하여 스크립트를 활성화하세요.

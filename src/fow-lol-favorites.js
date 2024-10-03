@@ -6,8 +6,8 @@
 // @author       Nikuname, Clrain
 // @match        https://fow.lol/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=fow.lol
-// @updateURL    https://raw.githubusercontent.com/jinhyeonseo01/fow-favorites-extension/refs/heads/main/src/fowlol-flower-ext.js
-// @downloadURL  https://raw.githubusercontent.com/jinhyeonseo01/fow-favorites-extension/refs/heads/main/src/fowlol-flower-ext.js
+// @updateURL    https://raw.githubusercontent.com/jinhyeonseo01/fow-favorites-extension/refs/heads/main/src/fow-lol-favorites.js
+// @downloadURL  https://raw.githubusercontent.com/jinhyeonseo01/fow-favorites-extension/refs/heads/main/src/fow-lol-favorites.js
 // @grant        none
 // ==/UserScript==
 
