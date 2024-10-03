@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         fow.lol - 즐겨찾기 확장
-// @namespace    http://tampermonkey.net/
+// @namespace    https://github.com/jinhyeonseo01/fow-favorites-extension
 // @version      2024-10-02
 // @description  즐겨찾기 가시성을 높혀주는 확장
 // @author       Nikuname, Clrain
-// @match        https://www.fow.lol/*
+// @match        https://fow.lol/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=fow.lol
-// @updateURL    https://github.com/jinhyeonseo01/fow-favorites-extension/raw/main/src/fowlol-flower-ext.js
-// @downloadURL  https://github.com/jinhyeonseo01/fow-favorites-extension/raw/main/src/fowlol-flower-ext.js
+// @updateURL    https://raw.githubusercontent.com/jinhyeonseo01/fow-favorites-extension/refs/heads/main/src/fowlol-flower-ext.js
+// @downloadURL  https://raw.githubusercontent.com/jinhyeonseo01/fow-favorites-extension/refs/heads/main/src/fowlol-flower-ext.js
 // @grant        none
 // ==/UserScript==
 
