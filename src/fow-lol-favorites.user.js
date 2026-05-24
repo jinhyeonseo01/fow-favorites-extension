@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         fow.lol - 즐겨찾기 확장
 // @namespace    https://github.com/jinhyeonseo01/fow-favorites-extension
-// @version      2026-05-24
+// @version      2026-05-25
 // @description  fow.lol 전적 페이지에 그룹형 즐겨찾기 패널을 추가합니다.
 // @author       Nikuname, Clrain
 // @match        https://www.fow.lol/*
@@ -18,6 +18,7 @@
   const APP_ID = 'fow-favorites-app';
   const STORAGE_KEY = 'fowFavorites.groups.v2';
   const LEGACY_STORAGE_KEY = 'tagGroups';
+  const UI_STORAGE_KEY = 'fowFavorites.ui.v1';
   const DEFAULT_GROUPS = [
     { id: 'group-account', name: '내 계정', tags: [] },
     { id: 'group-favorites', name: '즐겨찾기', tags: [] }
@@ -94,6 +95,7 @@
     document.body.appendChild(app);
     document.head.appendChild(createStyles());
     bindEvents(app);
+    setPanelCollapsed(Boolean(readStorage(UI_STORAGE_KEY)?.collapsed), false);
 
     const currentTag = getCurrentSummonerTag();
     if (currentTag) {
@@ -415,9 +417,7 @@
 
     if (actionEl?.dataset.action === 'toggle-panel') {
       const app = document.getElementById(APP_ID);
-      const collapsed = app.classList.toggle('is-collapsed');
-      actionEl.textContent = collapsed ? '+' : '-';
-      actionEl.title = collapsed ? '펼치기' : '접기';
+      setPanelCollapsed(!app.classList.contains('is-collapsed'));
       return;
     }
 
@@ -919,6 +919,23 @@
       message.textContent = '';
       message.classList.remove('is-error');
     }, 2600);
+  }
+
+  function setPanelCollapsed(collapsed, shouldSave = true) {
+    const app = document.getElementById(APP_ID);
+    if (!app) return;
+
+    const toggleButton = app.querySelector('[data-action="toggle-panel"]');
+    app.classList.toggle('is-collapsed', collapsed);
+
+    if (toggleButton) {
+      toggleButton.textContent = collapsed ? '+' : '-';
+      toggleButton.title = collapsed ? '펼치기' : '접기';
+    }
+
+    if (shouldSave) {
+      localStorage.setItem(UI_STORAGE_KEY, JSON.stringify({ collapsed }));
+    }
   }
 
   function getCurrentSummonerTag() {
