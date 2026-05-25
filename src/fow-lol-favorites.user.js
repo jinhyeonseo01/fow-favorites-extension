@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         fow.lol - 즐겨찾기 확장
 // @namespace    https://github.com/jinhyeonseo01/fow-favorites-extension
-// @version      2026-05-25
+// @version      2026-05-26
 // @description  fow.lol 전적 페이지에 그룹형 즐겨찾기 패널을 추가합니다.
 // @author       Nikuname, Clrain
 // @match        https://www.fow.lol/*
@@ -28,6 +28,7 @@
   let selectedGroupId = '';
   let messageTimer = null;
   let dragState = null;
+  let resizeState = null;
 
   waitForPage().then(mount).catch((error) => {
     console.warn('[FOW Favorites] mount failed:', error);
@@ -67,6 +68,7 @@
     app.id = APP_ID;
     app.setAttribute('aria-label', 'FOW 즐겨찾기');
     app.innerHTML = `
+      <div class="ff-resize-handle" data-action="resize-panel" title="드래그해서 폭 조절"></div>
       <div class="ff-panel">
         <header class="ff-header">
           <div>
@@ -95,7 +97,9 @@
     document.body.appendChild(app);
     document.head.appendChild(createStyles());
     bindEvents(app);
-    setPanelCollapsed(Boolean(readStorage(UI_STORAGE_KEY)?.collapsed), false);
+    const uiState = loadUiState();
+    if (uiState.width) setPanelWidth(uiState.width, false);
+    setPanelCollapsed(uiState.collapsed, false);
 
     const currentTag = getCurrentSummonerTag();
     if (currentTag) {
@@ -114,7 +118,9 @@
         position: fixed;
         top: 86px;
         right: 14px;
-        width: min(360px, calc(100vw - 28px));
+        width: var(--ff-panel-width, min(360px, calc(100vw - 28px)));
+        min-width: min(260px, calc(100vw - 28px));
+        max-width: calc(100vw - 28px);
         max-height: calc(100vh - 110px);
         z-index: 2147483000;
         color: #202124;
@@ -127,6 +133,42 @@
 
       #${APP_ID}.is-collapsed {
         width: auto;
+      }
+
+      #${APP_ID}.is-collapsed .ff-resize-handle {
+        display: none;
+      }
+
+      #${APP_ID}.is-resizing,
+      #${APP_ID}.is-resizing * {
+        cursor: ew-resize !important;
+        user-select: none;
+      }
+
+      #${APP_ID} .ff-resize-handle {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: -5px;
+        width: 10px;
+        cursor: ew-resize;
+        z-index: 2;
+      }
+
+      #${APP_ID} .ff-resize-handle::before {
+        content: "";
+        position: absolute;
+        top: 10px;
+        bottom: 10px;
+        left: 4px;
+        width: 2px;
+        border-radius: 2px;
+        background: rgba(47, 95, 143, 0.18);
+      }
+
+      #${APP_ID} .ff-resize-handle:hover::before,
+      #${APP_ID}.is-resizing .ff-resize-handle::before {
+        background: #2f5f8f;
       }
 
       #${APP_ID}.is-collapsed .ff-controls,
@@ -381,6 +423,7 @@
   function bindEvents(app) {
     app.addEventListener('submit', handleSubmit);
     app.addEventListener('click', handleClick);
+    app.addEventListener('pointerdown', handlePointerDown);
     app.addEventListener('change', handleChange);
     app.addEventListener('keydown', handleKeydown);
     app.addEventListener('dragstart', handleDragStart);
@@ -921,6 +964,48 @@
     }, 2600);
   }
 
+  function handlePointerDown(event) {
+    if (!event.target.matches('[data-action="resize-panel"]')) return;
+
+    const app = document.getElementById(APP_ID);
+    if (!app || app.classList.contains('is-collapsed')) return;
+
+    const rect = app.getBoundingClientRect();
+    resizeState = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startWidth: rect.width
+    };
+
+    event.preventDefault();
+    event.target.setPointerCapture?.(event.pointerId);
+    app.classList.add('is-resizing');
+    window.addEventListener('pointermove', handlePanelResizeMove);
+    window.addEventListener('pointerup', handlePanelResizeEnd);
+    window.addEventListener('pointercancel', handlePanelResizeEnd);
+  }
+
+  function handlePanelResizeMove(event) {
+    if (!resizeState || event.pointerId !== resizeState.pointerId) return;
+
+    const nextWidth = resizeState.startWidth + resizeState.startX - event.clientX;
+    setPanelWidth(nextWidth, false);
+  }
+
+  function handlePanelResizeEnd(event) {
+    if (!resizeState || event.pointerId !== resizeState.pointerId) return;
+
+    const app = document.getElementById(APP_ID);
+    const finalWidth = app?.getBoundingClientRect().width;
+    if (finalWidth) setPanelWidth(finalWidth);
+
+    resizeState = null;
+    app?.classList.remove('is-resizing');
+    window.removeEventListener('pointermove', handlePanelResizeMove);
+    window.removeEventListener('pointerup', handlePanelResizeEnd);
+    window.removeEventListener('pointercancel', handlePanelResizeEnd);
+  }
+
   function setPanelCollapsed(collapsed, shouldSave = true) {
     const app = document.getElementById(APP_ID);
     if (!app) return;
@@ -934,8 +1019,40 @@
     }
 
     if (shouldSave) {
-      localStorage.setItem(UI_STORAGE_KEY, JSON.stringify({ collapsed }));
+      saveUiState({ collapsed });
     }
+  }
+
+  function setPanelWidth(width, shouldSave = true) {
+    const app = document.getElementById(APP_ID);
+    if (!app) return;
+
+    const normalizedWidth = clampPanelWidth(width);
+    app.style.setProperty('--ff-panel-width', `${normalizedWidth}px`);
+
+    if (shouldSave) {
+      saveUiState({ width: normalizedWidth });
+    }
+  }
+
+  function clampPanelWidth(width) {
+    const viewportMax = Math.max(260, window.innerWidth - 28);
+    const maxWidth = Math.min(640, viewportMax);
+    const minWidth = Math.min(260, maxWidth);
+    return Math.round(Math.min(maxWidth, Math.max(minWidth, Number(width) || 360)));
+  }
+
+  function loadUiState() {
+    const saved = readStorage(UI_STORAGE_KEY) || {};
+    return {
+      collapsed: Boolean(saved.collapsed),
+      width: Number(saved.width) || 0
+    };
+  }
+
+  function saveUiState(patch) {
+    const current = readStorage(UI_STORAGE_KEY) || {};
+    localStorage.setItem(UI_STORAGE_KEY, JSON.stringify({ ...current, ...patch }));
   }
 
   function getCurrentSummonerTag() {
